@@ -37,9 +37,13 @@ if [ $(whoami) != "$MISTBORN_USER" ]; then
         GIT_BRANCH=$(git symbolic-ref --short HEAD || echo "master")
         popd
 
-        sudo cp $FULLPATH /home/$MISTBORN_USER
-        sudo chown $MISTBORN_USER:$MISTBORN_USER /home/$MISTBORN_USER/$FILENAME
-        sudo SSH_CLIENT="$SSH_CLIENT" MISTBORN_DEFAULT_PASSWORD="$MISTBORN_DEFAULT_PASSWORD" GIT_BRANCH="$GIT_BRANCH" MISTBORN_INSTALL_COCKPIT="$MISTBORN_INSTALL_COCKPIT" -i -u $MISTBORN_USER bash -c "/home/$MISTBORN_USER/$FILENAME" # self-referential call
+
+        sudo rm -rf /opt/mistborn 2>/dev/null || true
+
+        sudo cp $FULLPATH /opt/mistborn
+        sudo chown -R $USER:$USER /opt/$FILENAME
+
+        sudo SSH_CLIENT="$SSH_CLIENT" MISTBORN_DEFAULT_PASSWORD="$MISTBORN_DEFAULT_PASSWORD" GIT_BRANCH="$GIT_BRANCH" MISTBORN_INSTALL_COCKPIT="$MISTBORN_INSTALL_COCKPIT" -i -u $MISTBORN_USER bash -c "/opt/$FILENAME" # self-referential call
         exit 0
 fi
 
@@ -59,15 +63,9 @@ echo -e "| |  | | \__ \ |_| |_) | (_) | |  | | | |"
 echo -e "|_|  |_|_|___/\__|_.__/ \___/|_|  |_| |_|"
 echo -e ""
 
-sudo rm -rf /opt/mistborn 2>/dev/null || true
-
-# clone to /opt and change directory
-echo "Cloning $GIT_BRANCH branch from mistborn repo"
-sudo git clone https://gitlab.com/cyber5k/mistborn.git -b $GIT_BRANCH /opt/mistborn
-sudo chown -R $USER:$USER /opt/mistborn
 pushd .
 cd /opt/mistborn
-git submodule update --init --recursive
+#git submodule update --init --recursive
 
 # Check updates
 echo "Checking updates"
@@ -76,13 +74,6 @@ source ./scripts/subinstallers/check_updates.sh
 # MISTBORN_DEFAULT_PASSWORD
 source ./scripts/subinstallers/passwd.sh
 
-# Install Cockpit?
-if [ -z "${MISTBORN_INSTALL_COCKPIT}" ]; then
-    read -p "Install Cockpit (a somewhat resource-heavy system management graphical user interface -- NOT RECOMMENDED on Raspberry Pi)? [y/N]: " MISTBORN_INSTALL_COCKPIT
-    echo
-    MISTBORN_INSTALL_COCKPIT=${MISTBORN_INSTALL_COCKPIT:-N}
-fi
-
 # initial load update package list during check_updates.sh
 
 # install figlet
@@ -90,7 +81,6 @@ sudo -E apt-get install -y figlet
 
 # get os and distro
 source ./scripts/subinstallers/platform.sh
-
 
 # iptables
 echo "Setting up firewall (iptables)"
