@@ -36,8 +36,8 @@ if [ $(whoami) != "$MISTBORN_USER" ]; then
         sudo cp -r ./mistborn-terraform-install /opt/mistborn
         sudo chown -R $USER:$USER /opt/mistborn
 
-        sudo SSH_CLIENT="$SSH_CLIENT" MISTBORN_DEFAULT_PASSWORD="$MISTBORN_DEFAULT_PASSWORD" GIT_BRANCH="master" MISTBORN_INSTALL_COCKPIT="$MISTBORN_INSTALL_COCKPIT" -i -u $MISTBORN_USER bash -c "/opt/mistborn/scripts/install.sh" # self-referential call
-        exit 0
+        #sudo SSH_CLIENT="$SSH_CLIENT" MISTBORN_DEFAULT_PASSWORD="$MISTBORN_DEFAULT_PASSWORD" GIT_BRANCH="master" MISTBORN_INSTALL_COCKPIT="$MISTBORN_INSTALL_COCKPIT" -i -u $MISTBORN_USER bash -c "/opt/mistborn/scripts/install.sh" # self-referential call
+        #exit 0
 fi
 
 echo "Running as $USER"
