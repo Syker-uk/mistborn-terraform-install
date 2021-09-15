@@ -50,6 +50,7 @@ sudo iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 if [ ! -z "${SSH_CLIENT}" ]; then
     SSH_SRC=$(echo $SSH_CLIENT | awk '{print $1}')
     SSH_PRT=$(echo $SSH_CLIENT | awk '{print $3}')
+    echo $SSH_PRT
     sudo iptables -A INPUT -p tcp -s $SSH_SRC --dport $SSH_PRT -j ACCEPT
 fi
 
@@ -100,11 +101,11 @@ sudo ip6tables -P OUTPUT ACCEPT
 # iptables-persistent
 if [ ! "$(dpkg-query -l iptables-persistent)" ]; then
     echo "Installing iptables-persistent"
-    
+
     # answer variables
     echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
     echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
-    
+
     # install
     sudo -E apt-get install -y iptables-persistent ipset
 else
