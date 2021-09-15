@@ -1,0 +1,27 @@
+[Unit]
+Description=Mistborn Jitsi Service
+Requires=Mistborn-base.service
+After=Mistborn-base.service
+PartOf=Mistborn-base.service
+
+[Service]
+Restart=always
+RestartSec=15
+User=root
+Group=docker
+PermissionsStartOnly=true
+
+# Shutdown container (if running) when unit is stopped
+ExecStartPre=/opt/mistborn/scripts/wrappers/mistborn_docker.sh jitsi docker-compose -f /opt/mistborn/extra/jitsi-meet.yml down
+ExecStartPre=/opt/mistborn/scripts/wrappers/mistborn_docker.sh jitsi /opt/mistborn/scripts/services/jitsi/iptables_up.sh
+
+# Start container when unit is started
+ExecStart=/opt/mistborn/scripts/wrappers/mistborn_docker.sh jitsi docker-compose -f /opt/mistborn/extra/jitsi-meet.yml up --build
+
+# Stop container when unit is stopped
+ExecStop=/opt/mistborn/scripts/wrappers/mistborn_docker.sh jitsi docker-compose -f /opt/mistborn/extra/jitsi-meet.yml down
+# Post stop
+ExecStopPost=-/opt/mistborn/scripts/wrappers/mistborn_docker.sh jitsi /opt/mistborn/scripts/services/jitsi/iptables_down.sh
+
+[Install]
+WantedBy=Mistborn-base.service
