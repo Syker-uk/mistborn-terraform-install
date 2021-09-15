@@ -30,14 +30,13 @@ if [ $(whoami) != "$MISTBORN_USER" ]; then
             echo "There was a problem checking sudoers"
             ;;
         esac
-        
 
         sudo rm -rf /opt/mistborn 2>/dev/null || true
 
         sudo cp $FULLPATH /opt/mistborn
-        sudo chown -R $USER:$USER /opt/$FILENAME
+        sudo chown -R $USER:$USER /opt/mistborn
 
-        sudo SSH_CLIENT="$SSH_CLIENT" MISTBORN_DEFAULT_PASSWORD="$MISTBORN_DEFAULT_PASSWORD" GIT_BRANCH="master" MISTBORN_INSTALL_COCKPIT="$MISTBORN_INSTALL_COCKPIT" -i -u $MISTBORN_USER bash -c "/opt/$FILENAME" # self-referential call
+        sudo SSH_CLIENT="$SSH_CLIENT" MISTBORN_DEFAULT_PASSWORD="$MISTBORN_DEFAULT_PASSWORD" GIT_BRANCH="master" MISTBORN_INSTALL_COCKPIT="$MISTBORN_INSTALL_COCKPIT" -i -u $MISTBORN_USER bash -c "/opt/mistborn/scripts/install.sh" # self-referential call
         exit 0
 fi
 
