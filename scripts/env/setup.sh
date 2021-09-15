@@ -27,14 +27,7 @@ echo "MISTBORN_DNS_BIND_IP=${MISTBORN_DNS_BIND_IP}" | sudo tee -a ${VAR_FILE}
 echo "MISTBORN_BIND_IP=10.2.3.1" | sudo tee -a ${VAR_FILE}
 
 # MISTBORN_TAG
-
-GIT_BRANCH=$(git -C /opt/mistborn symbolic-ref --short HEAD || echo "master")
-MISTBORN_TAG="latest"
-if [ "$GIT_BRANCH" != "master" ]; then
-    MISTBORN_TAG="test"
-fi
-
-echo "MISTBORN_TAG=$MISTBORN_TAG" | sudo tee -a ${VAR_FILE}
+echo "MISTBORN_TAG=master | sudo tee -a ${VAR_FILE}
 
 #### SERVICE files
 
