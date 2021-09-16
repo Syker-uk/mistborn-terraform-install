@@ -25,7 +25,7 @@ if [[ -f "${SERVICE_ENV_INSTALLER}" ]]; then
         # create env file for service
         echo "Creating environment file"
         source $SERVICE_ENV_INSTALLER $SERVICE_ENV_FILE
-        chown mistborn:mistborn $SERVICE_ENV_FILE
+        chown ubuntu:ubuntu $SERVICE_ENV_FILE
         chmod 600 $SERVICE_ENV_FILE
 
     fi

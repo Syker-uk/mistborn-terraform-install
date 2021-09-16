@@ -10,7 +10,7 @@ source /opt/mistborn/scripts/subinstallers/platform.sh
 
 # setup env file
 echo "" | sudo tee ${VAR_FILE}
-sudo chown mistborn:mistborn ${VAR_FILE}
+sudo chown ubuntu:ubuntu ${VAR_FILE}
 sudo chmod 600 ${VAR_FILE}
 
 # MISTBORN_DNS_BIND_IP
