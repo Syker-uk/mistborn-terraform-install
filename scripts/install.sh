@@ -23,7 +23,9 @@ echo "Running as $USER"
 
 #git submodule update --init --recursive
 
-cd ./mistborn-terraform-install
+mv ./mistborn-terraform-install /opt/mistborn
+
+cd /opt/mistborn
 # Check updates
 echo "Checking updates"
 ### REPLACE IN PROD ####
@@ -76,14 +78,7 @@ sudo systemctl restart ssh
 sudo -E apt-get install -y dnsutils fail2ban
 
 # Install kernel headers
-if [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ]; then
-    sudo -E apt install -y linux-headers-$(uname -r)
-elif [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "raspios" ]; then
-    sudo -E apt install -y raspberrypi-kernel-headers
-else
-    echo "Unsupported OS: $DISTRO"
-    exit 1
-fi
+sudo -E apt install -y linux-headers-$(uname -r)
 
 # Wireugard
 source ./scripts/subinstallers/wireguard.sh
