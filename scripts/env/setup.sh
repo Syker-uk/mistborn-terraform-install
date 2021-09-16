@@ -35,8 +35,8 @@ echo "MISTBORN_TAG=master | sudo tee -a ${VAR_FILE}
 sudo cp /opt/mistborn/scripts/services/Mistborn* /etc/systemd/system/
 
 # set script user and owner
-sudo find /etc/systemd/system/ -type f -name 'Mistborn*' | xargs sudo sed -i "s/User=root/User=$USER/"
-#sudo find /etc/systemd/system/ -type f -name 'Mistborn*' | xargs sudo sed -i "s/ root:root / $USER:$USER /"
+sudo find /etc/systemd/system/ -type f -name 'Mistborn*' | xargs sudo sed -i "s/User=root/User=ubuntu/"
+#sudo find /etc/systemd/system/ -type f -name 'Mistborn*' | xargs sudo sed -i "s/ root:root / ubuntu:ubuntu /"
 
 # reload in case the iface is not immediately set
 sudo systemctl daemon-reload
