@@ -4,42 +4,6 @@ set -e
 
 export DEBIAN_FRONTEND=noninteractive
 
-## ensure run as nonroot user
-#if [ "$EUID" -eq 0 ]; then
-MISTBORN_USER="mistborn"
-if [ $(whoami) != "$MISTBORN_USER" ]; then
-        echo "Creating user: $MISTBORN_USER"
-        sudo useradd -s /bin/bash -d /home/$MISTBORN_USER -m -G sudo $MISTBORN_USER 2>/dev/null || true
-        SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
-        #echo "SCRIPTPATH: $SCRIPTPATH"
-        FILENAME=$(basename -- "$0")
-        #echo "FILENAME: $FILENAME"
-        FULLPATH="$SCRIPTPATH/$FILENAME"
-        #echo "FULLPATH: $FULLPATH"
-
-        # SUDO
-        case `sudo grep -e "^$MISTBORN_USER.*" /etc/sudoers >/dev/null; echo $?` in
-        0)
-            echo "$MISTBORN_USER already in sudoers"
-            ;;
-        1)
-            echo "Adding $MISTBORN_USER to sudoers"
-            sudo bash -c "echo '$MISTBORN_USER  ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers"
-            ;;
-        *)
-            echo "There was a problem checking sudoers"
-            ;;
-        esac
-
-        sudo rm -rf /opt/mistborn 2>/dev/null || true
-
-        sudo cp -r ./mistborn-terraform-install /opt/mistborn
-        sudo chown -R $USER:$USER /opt/mistborn
-
-        #sudo SSH_CLIENT="$SSH_CLIENT" MISTBORN_DEFAULT_PASSWORD="$MISTBORN_DEFAULT_PASSWORD" GIT_BRANCH="master" MISTBORN_INSTALL_COCKPIT="$MISTBORN_INSTALL_COCKPIT" -i -u $MISTBORN_USER bash -c "/opt/mistborn/scripts/install.sh" # self-referential call
-        #exit 0
-fi
-
 echo "Running as $USER"
 
 # banner
@@ -55,14 +19,15 @@ echo -e "| |\/| | / __| __| '_ \ / _ \| '__| '_ \ "
 echo -e "| |  | | \__ \ |_| |_) | (_) | |  | | | |"
 echo -e "|_|  |_|_|___/\__|_.__/ \___/|_|  |_| |_|"
 echo -e ""
+echo "Running as $USER"
 
-pushd .
-cd /opt/mistborn
 #git submodule update --init --recursive
 
+cd ./mistborn-terraform-install
 # Check updates
 echo "Checking updates"
-source ./scripts/subinstallers/check_updates.sh
+### REPLACE IN PROD ####
+#source ./scripts/subinstallers/check_updates.sh
 
 # MISTBORN_DEFAULT_PASSWORD
 source ./scripts/subinstallers/passwd.sh
@@ -102,14 +67,8 @@ sudo -E apt-get install -y openssh-server
 #sudo sed -i 's/#PermitRootLogin.*/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
 #sudo sed -i 's/PermitRootLogin.*/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
 sudo sed -i 's/#Port.*/Port 22/' /etc/ssh/sshd_config
-sudo sed -i 's/Port.*/Port 22/' /etc/ssh/sshd_config
-
-# if installing over SSH, modify SSH port rule
-if [ ! -z "${SSH_CLIENT}" ]; then
-    SSH_SRC=$(echo $SSH_CLIENT | awk '{print $1}')
-    SSH_PRT=$(echo $SSH_CLIENT | awk '{print $3}')
-    sudo sed -i "s/Port.*/Port $SSH_PRT/" /etc/ssh/sshd_config
-fi
+SSH_PRT=$(echo $SSH_CLIENT | awk '{print $3}')
+sudo sed -i "s/Port.*/Port $SSH_PRT/" /etc/ssh/sshd_config
 sudo systemctl enable ssh
 sudo systemctl restart ssh
 
@@ -147,7 +106,7 @@ then
     MISTBORN_INSTALL_COCKPIT=Y
 fi
 
-# Mistborn-cli (pip3 installed by docker)
+
 figlet "Mistborn: Installing mistborn-cli"
 sudo pip3 install -e ./modules/mistborn-cli
 
